@@ -5,6 +5,8 @@ import {
     GraphQLEnumType,
     GraphQLList,
  } from "graphql";
+import { ProfilesType } from "./profile.js";
+import context from "../context.js";
 
 export const MemberTypeEnum = new GraphQLEnumType({
     name: 'MemberTypeId',
@@ -20,6 +22,12 @@ export const MemberTypeType = new GraphQLObjectType({
     id: { type:  MemberTypeEnum },
     discount: { type: GraphQLFloat },
     postsLimitPerMonth: { type: GraphQLInt },
+    profiles: {
+      type: ProfilesType,
+      resolve: async({ id }) => {
+        await context.profile.findMany({ where: { memberTypeId: id }})
+      },
+    }
   })),
 })
 
