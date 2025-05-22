@@ -2,10 +2,11 @@ import { UserType, UsersType } from '../graphQLTypes/user.js';
 import { User } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
 import context from '../context.js';
+import { GraphQLObjectType } from 'graphql';
 
 export const UserQueries = {
   user: {
-    type: UserType,
+    type: UserType as GraphQLObjectType,
     args: {
       id: { type: UUIDType },
     },
@@ -15,7 +16,7 @@ export const UserQueries = {
     },
   },
   users: {
-    type: UsersType,
+    type: UsersType as GraphQLObjectType,
     resolve: async (_: unknown, __: unknown): Promise<User[]> => {
       const users = await context.user.findMany();
       return users;

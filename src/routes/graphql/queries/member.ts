@@ -1,24 +1,18 @@
-import { MemberTypeType, MemberTypesType } from '../graphQLTypes/memeber.js';
+import { MemberTypeEnum, MemberTypeType, MemberTypesType } from '../graphQLTypes/memeber.js';
 import { MemberType } from '@prisma/client';
-import { UUIDType } from '../types/uuid.js';
 import context from '../context.js';
+import { GraphQLObjectType } from 'graphql';
 
 export const MemberTypeQueries = {
   memberType: {
-    type: MemberTypeType,
+    type: MemberTypeType as GraphQLObjectType,
     args: {
-      id: { type: UUIDType },
+      id: { type: MemberTypeEnum },
     },
-    resolve: async (_: unknown, { id }: MemberType) => {
-      const memberType = await context.memberType.findUnique({ where: { id } });
-      return memberType;
-    },
+    resolve: async (_: unknown, { id }: MemberType) => await context.memberType.findUnique({ where: { id } }),
   },
   memberTypes: {
     type: MemberTypesType,
-    resolve: async (): Promise<MemberType[]> => {
-      const memberTypes = await context.memberType.findMany();
-      return memberTypes;
-    },
+    resolve: async (): Promise<MemberType[]> => await context.memberType.findMany(),
   },
 };
