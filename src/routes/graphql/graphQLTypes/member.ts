@@ -4,7 +4,6 @@ import {
     GraphQLInt,
     GraphQLEnumType,
     GraphQLList,
-    GraphQLType,
     GraphQLNonNull,
  } from "graphql";
 import { ProfilesType } from "./profile.js";

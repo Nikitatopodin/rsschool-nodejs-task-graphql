@@ -1,4 +1,4 @@
-import { MemberTypeEnum, MemberTypeType, MemberTypesType } from '../graphQLTypes/memeber.js';
+import { MemberTypeEnum, MemberTypeType, MemberTypesType } from '../graphQLTypes/member.js';
 import { MemberType } from '@prisma/client';
 import context from '../context.js';
 import { GraphQLObjectType } from 'graphql';

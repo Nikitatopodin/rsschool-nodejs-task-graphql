@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLBoolean, GraphQLInt, GraphQLList, GraphQLNonNull } from "graphql";
 import { UUIDType } from "../types/uuid.js";
-import { MemberTypeType } from "./memeber.js";
+import { MemberTypeType } from "./member.js";
 import context from "../context.js";
 import { Profile } from "@prisma/client";
 
