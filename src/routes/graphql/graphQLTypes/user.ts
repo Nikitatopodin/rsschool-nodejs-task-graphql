@@ -3,7 +3,6 @@ import { UUIDType } from "../types/uuid.js";
 import { ProfileType } from "./profile.js";
 import { PostsType } from "./post.js";
 import {  User } from "@prisma/client";
-import context from "../context.js";
 
 export const UserType = new GraphQLObjectType({
   name: 'User',
@@ -13,31 +12,19 @@ export const UserType = new GraphQLObjectType({
     balance: { type: new GraphQLNonNull(GraphQLFloat) },
     profile: {
       type: ProfileType as GraphQLObjectType,
-      resolve: async ({ id }: User) => await context.profile.findUnique({ where: { userId: id } })
+      resolve: async ({ id }: User, _, { dataLoaders }) => dataLoaders.profilesLoader.load(id),
     },
     posts:  {
       type: PostsType,
-      resolve: async ({ id }) => await context.post.findMany({ where: { authorId: id } }),
+      resolve: async ({ id }: User, _, { dataLoaders }) => dataLoaders.postsLoader.load(id),
     },
     userSubscribedTo: { 
       type: new GraphQLNonNull(UsersType),
-      resolve: async ({ id }: User) => {
-        const res = await context.subscribersOnAuthors.findMany({
-          where: { subscriberId: id },
-          select: { author: true },
-        })
-        return res.map((res) => res.author);
-      }
+      resolve: async ({ id }: User, _, { dataLoaders }) => dataLoaders.userSubscribedToLoader.load(id),
      },
     subscribedToUser: {
       type: new GraphQLNonNull(UsersType),
-      resolve: async ({ id }: User) => {
-        const res = await context.subscribersOnAuthors.findMany({
-          where: { authorId: id },
-          select: { subscriber: true },
-        })
-        return res.map((res) => res.subscriber);
-      }
+      resolve: async ({ id }: User, _, { dataLoaders }) => dataLoaders.subscribedToUserLoader.load(id),
      },
   })),
 });

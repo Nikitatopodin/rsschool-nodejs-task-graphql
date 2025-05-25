@@ -1,6 +1,5 @@
 import { MemberTypeEnum, MemberTypeType, MemberTypesType } from '../graphQLTypes/member.js';
 import { MemberType } from '@prisma/client';
-import context from '../context.js';
 import { GraphQLObjectType } from 'graphql';
 
 export const MemberTypeQueries = {
@@ -9,10 +8,10 @@ export const MemberTypeQueries = {
     args: {
       id: { type: MemberTypeEnum },
     },
-    resolve: async (_: unknown, { id }: MemberType) => await context.memberType.findUnique({ where: { id } }),
+    resolve: async (_: unknown, { id }: MemberType, { prisma }) => await prisma.memberType.findUnique({ where: { id } }),
   },
   memberTypes: {
     type: MemberTypesType,
-    resolve: async (): Promise<MemberType[]> => await context.memberType.findMany(),
+    resolve: async (_, __, { prisma }): Promise<MemberType[]> => await prisma.memberType.findMany(),
   },
 };

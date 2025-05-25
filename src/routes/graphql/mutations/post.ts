@@ -1,5 +1,4 @@
 import { GraphQLBoolean, GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql";
-import context from "../context.js";
 import { Post } from "@prisma/client";
 import { PostType } from "../graphQLTypes/post.js";
 import { UUIDType } from "../types/uuid.js";
@@ -25,16 +24,16 @@ export const PostMutations = {
   createPost: {
     type: PostType,
     args: { dto: { type: CreatePostInput } },
-    resolve: async (_: unknown, { dto }: { dto: Post }) => await context.post.create({ data: dto }),
+    resolve: async (_: unknown, { dto }: { dto: Post }, { prisma }) => await prisma.post.create({ data: dto }),
   },
   changePost : {
     type: PostType,
     args: { id: { type: UUIDType }, dto: { type: ChangePostInput } },
-    resolve: async (_: unknown, { id, dto }: { id: string, dto: Post }) => await context.post.update({ where: { id }, data: dto }),
+    resolve: async (_: unknown, { id, dto }: { id: string, dto: Post }, { prisma }) => await prisma.post.update({ where: { id }, data: dto }),
   },
   deletePost: {
     type: GraphQLBoolean,
     args: { id: { type: UUIDType } },
-    resolve: async(_: unknown, { id }: { id: string }) => { await context.post.delete({ where: { id } }) },
+    resolve: async(_: unknown, { id }: { id: string }, { prisma }) => { await prisma.post.delete({ where: { id } }) },
   }
 }

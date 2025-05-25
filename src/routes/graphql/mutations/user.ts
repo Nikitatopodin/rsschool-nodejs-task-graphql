@@ -1,6 +1,5 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { UserType } from "../graphQLTypes/user.js";
-import context from "../context.js";
 import { User } from "@prisma/client";
 import { UUIDType } from "../types/uuid.js";
 
@@ -24,17 +23,17 @@ export const UserMutations = {
   createUser: {
     type: UserType as GraphQLObjectType,
     args: { dto: { type: CreateUserInput } },
-    resolve: async (_: unknown, { dto }: { dto: User }) => await context.user.create({ data: dto }),
+    resolve: async (_: unknown, { dto }: { dto: User }, { prisma }) => await prisma.user.create({ data: dto }),
   },
   changeUser : {
     type: UserType as GraphQLObjectType,
     args: { id: { type: new GraphQLNonNull(UUIDType) }, dto: { type: ChangeUserInput } },
-    resolve: async (_: unknown, { id, dto }: { id: string, dto: User }) => await context.user.update({ where: { id }, data: dto }),
+    resolve: async (_: unknown, { id, dto }: { id: string, dto: User }, { prisma }) => await prisma.user.update({ where: { id }, data: dto }),
   },
   deleteUser: {
     type: GraphQLBoolean,
     args: { id: { type: new GraphQLNonNull(UUIDType) } },
-    resolve: async(_: unknown, { id }: { id: string }) => { await context.user.delete({ where: { id } }) },
+    resolve: async(_: unknown, { id }: { id: string }, { prisma }) => { await prisma.user.delete({ where: { id } }) },
   },
   subscribeTo: {
     type: GraphQLBoolean,
@@ -42,8 +41,8 @@ export const UserMutations = {
       userId: { type: new GraphQLNonNull(UUIDType) },
       authorId: { type: new GraphQLNonNull(UUIDType) },
     },
-    resolve: async (_: unknown, { userId, authorId }) => {
-      await context.subscribersOnAuthors.create({
+    resolve: async (_: unknown, { userId, authorId }, { prisma }) => {
+      await prisma.subscribersOnAuthors.create({
         data: { subscriberId: userId, authorId },
       });
       return true;
@@ -52,8 +51,8 @@ export const UserMutations = {
   unsubscribeFrom: {
     type: GraphQLBoolean,
     args: { userId: { type: new GraphQLNonNull(UUIDType) }, authorId: { type: new GraphQLNonNull(UUIDType) } },
-    resolve: async (_: unknown, { userId, authorId }: { userId: string, authorId: string }) => {
-      await context.subscribersOnAuthors.deleteMany({ where: { subscriberId: userId, authorId } });
+    resolve: async (_: unknown, { userId, authorId }: { userId: string, authorId: string }, { prisma }) => {
+      await prisma.subscribersOnAuthors.deleteMany({ where: { subscriberId: userId, authorId } });
       return true;
     }
   }

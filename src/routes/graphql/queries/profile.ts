@@ -1,7 +1,6 @@
 import { ProfileType, ProfilesType } from '../graphQLTypes/profile.js';
 import { Profile } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
-import context from '../context.js';
 import { GraphQLObjectType } from 'graphql';
 
 export const ProfileQueries = {
@@ -10,16 +9,10 @@ export const ProfileQueries = {
     args: {
       id: { type: UUIDType },
     },
-    resolve: async (_: unknown, { id }: Profile) => {
-      const profile = await context.profile.findUnique({ where: { id } });
-      return profile;
-    },
+    resolve: async (_: unknown, { id }: Profile, { prisma }) => await prisma.profile.findUnique({ where: { id } }),
   },
   profiles: {
-    type: ProfilesType as GraphQLObjectType,
-    resolve: async (_: unknown, __: unknown): Promise<Profile[]> => {
-      const profiles = await context.profile.findMany();
-      return profiles;
-    },
+    type: ProfilesType,
+    resolve: async (_: unknown, __: unknown, { prisma }): Promise<Profile[]> => await prisma.profile.findMany(),
   },
 };
