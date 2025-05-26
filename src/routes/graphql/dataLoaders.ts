@@ -1,4 +1,4 @@
-import { MemberType, Post, PrismaClient, Profile } from "@prisma/client";
+import { MemberType, Post, PrismaClient, Profile, User } from "@prisma/client";
 import DataLoader from "dataloader"
 
 export const createDataLoaders = (context: PrismaClient) => ({
@@ -8,8 +8,8 @@ export const createDataLoaders = (context: PrismaClient) => ({
         authorId: { in: [...ids] },
       },
     });
-    const postsArr = posts.map((post: Post) => [post.authorId, [post]]);
-    const postsObj = Object.fromEntries(postsArr);
+    const postsArr: Array<[string, Post[]]> = posts.map((post: Post) => [post.authorId, [post]]);
+    const postsObj: Record<string, Post[]> = Object.fromEntries(postsArr);
 
     return ids.map((id) => postsObj[id]);
   }),
@@ -19,8 +19,8 @@ export const createDataLoaders = (context: PrismaClient) => ({
         userId: { in: [...ids] },
       },
     });
-    const profilesArr = profiles.map((profile: Profile) => [profile.userId, profile]);
-    const profilesObj = Object.fromEntries(profilesArr);
+    const profilesArr: Array<[string, Profile]> = profiles.map((profile: Profile) => [profile.userId, profile]);
+    const profilesObj: Record<string, Profile> = Object.fromEntries(profilesArr);
     
     return ids.map((id) =>  profilesObj[id]);
   }),
@@ -30,8 +30,8 @@ export const createDataLoaders = (context: PrismaClient) => ({
         id: { in: [...ids] },
       },
     });
-    const memberTypesArr = memberTypes.map((memberType: MemberType) => [memberType.id, memberType]);
-    const memberTypesObj = Object.fromEntries(memberTypesArr);
+    const memberTypesArr: Array<[string, MemberType]> = memberTypes.map((memberType: MemberType) => [memberType.id, memberType]);
+    const memberTypesObj: Record<string, MemberType> = Object.fromEntries(memberTypesArr);
 
     return ids.map((id) => memberTypesObj[id]);
   }),
@@ -41,8 +41,8 @@ export const createDataLoaders = (context: PrismaClient) => ({
       include: { userSubscribedTo: { select: { author: true } } },
     });
 
-    const subscribersArr = users.map((user) => [user.id, user.userSubscribedTo.map((sub) => sub.author)]);
-    const subscribersObj = Object.fromEntries(subscribersArr)
+    const subscribersArr: Array<[string, User[]]> = users.map((user) => [user.id, user.userSubscribedTo.map((sub) => sub.author)]);
+    const subscribersObj: Record<string, User[]> = Object.fromEntries(subscribersArr);
 
     return ids.map((id) => subscribersObj[id]);
   }),
@@ -53,8 +53,8 @@ export const createDataLoaders = (context: PrismaClient) => ({
       include: { subscribedToUser: { select: { subscriber: true } } },
     });
 
-    const subscribersArr = users.map((user) => [user.id, user.subscribedToUser.map((sub) => sub.subscriber)]);
-    const subscribersObj = Object.fromEntries(subscribersArr);
+    const subscribersArr: Array<[string, User[]]> = users.map((user) => [user.id, user.subscribedToUser.map((sub) => sub.subscriber)]);
+    const subscribersObj: Record<string, User[]> = Object.fromEntries(subscribersArr);
 
     return ids.map((id) => subscribersObj[id]);
   }),

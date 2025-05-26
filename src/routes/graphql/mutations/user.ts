@@ -2,6 +2,7 @@ import { GraphQLBoolean, GraphQLFloat, GraphQLInputObjectType, GraphQLNonNull, G
 import { UserType } from "../graphQLTypes/user.js";
 import { User } from "@prisma/client";
 import { UUIDType } from "../types/uuid.js";
+import { Context } from "../types/context.js";
 
 const CreateUserInput = new GraphQLInputObjectType({
   name: 'CreateUserInput',
@@ -23,17 +24,17 @@ export const UserMutations = {
   createUser: {
     type: UserType as GraphQLObjectType,
     args: { dto: { type: CreateUserInput } },
-    resolve: async (_: unknown, { dto }: { dto: User }, { prisma }) => await prisma.user.create({ data: dto }),
+    resolve: async (_: unknown, { dto }: { dto: User }, { prisma }: Context) => await prisma.user.create({ data: dto }),
   },
   changeUser : {
     type: UserType as GraphQLObjectType,
     args: { id: { type: new GraphQLNonNull(UUIDType) }, dto: { type: ChangeUserInput } },
-    resolve: async (_: unknown, { id, dto }: { id: string, dto: User }, { prisma }) => await prisma.user.update({ where: { id }, data: dto }),
+    resolve: async (_: unknown, { id, dto }: { id: string, dto: User }, { prisma }: Context) => await prisma.user.update({ where: { id }, data: dto }),
   },
   deleteUser: {
     type: GraphQLBoolean,
     args: { id: { type: new GraphQLNonNull(UUIDType) } },
-    resolve: async(_: unknown, { id }: { id: string }, { prisma }) => { await prisma.user.delete({ where: { id } }) },
+    resolve: async(_: unknown, { id }: { id: string }, { prisma }: Context) => { await prisma.user.delete({ where: { id } }) },
   },
   subscribeTo: {
     type: GraphQLBoolean,
@@ -41,7 +42,7 @@ export const UserMutations = {
       userId: { type: new GraphQLNonNull(UUIDType) },
       authorId: { type: new GraphQLNonNull(UUIDType) },
     },
-    resolve: async (_: unknown, { userId, authorId }, { prisma }) => {
+    resolve: async (_: unknown, { userId, authorId }: {userId: string, authorId: string}, { prisma }: Context) => {
       await prisma.subscribersOnAuthors.create({
         data: { subscriberId: userId, authorId },
       });
@@ -51,7 +52,7 @@ export const UserMutations = {
   unsubscribeFrom: {
     type: GraphQLBoolean,
     args: { userId: { type: new GraphQLNonNull(UUIDType) }, authorId: { type: new GraphQLNonNull(UUIDType) } },
-    resolve: async (_: unknown, { userId, authorId }: { userId: string, authorId: string }, { prisma }) => {
+    resolve: async (_: unknown, { userId, authorId }: { userId: string, authorId: string }, { prisma }: Context) => {
       await prisma.subscribersOnAuthors.deleteMany({ where: { subscriberId: userId, authorId } });
       return true;
     }

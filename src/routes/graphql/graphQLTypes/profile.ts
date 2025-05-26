@@ -2,6 +2,7 @@ import { GraphQLObjectType, GraphQLBoolean, GraphQLInt, GraphQLList, GraphQLNonN
 import { UUIDType } from "../types/uuid.js";
 import { MemberTypeType } from "./member.js";
 import { Profile } from "@prisma/client";
+import { Context } from "../types/context.js";
 
 export const ProfileType = new GraphQLObjectType({
   name: 'Profile',
@@ -12,7 +13,7 @@ export const ProfileType = new GraphQLObjectType({
     userId: { type: UUIDType },
     memberType: {
       type: MemberTypeType,
-       resolve: async ({ memberTypeId }: Profile, _, { dataLoaders }) => dataLoaders.memberTypeLoader.load(memberTypeId),
+       resolve: async ({ memberTypeId }: Profile, _, { dataLoaders }: Context) => dataLoaders.memberTypeLoader.load(memberTypeId),
     },
   })),
 })
